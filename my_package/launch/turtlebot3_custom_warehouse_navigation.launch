@@ -1,0 +1,13 @@
+<launch>
+    <!-- Set the TURTLEBOT3_MODEL environment variable -->
+    <arg name="model" default="waffle_pi"/>
+    <env name="TURTLEBOT3_MODEL" value="$(arg model)"/>
+
+    <!-- Launch the TurtleBot3 in a Gazebo house environment -->
+    <include file="$(find my_package)/launch/custom_warehouse.launch"/>
+
+
+    <!-- Launch the navigation stack -->
+<include file="$(find my_package)/launch/turtlebot3_navigation.launch"/>
+</launch>
+

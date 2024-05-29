@@ -1,0 +1,13 @@
+<launch>
+ 
+    <!-- Launch the BoxCarrier node -->
+    <node name="box_carrier" pkg="my_package" type="box_carrier.py" output="screen">
+        <param name="robot_name" value="turtlebot3"/>
+        <param name="distance_in_front" value="0.3"/>
+    </node>
+
+    <!-- Launch the BoxMover node -->
+    <node name="box_mover" pkg="my_package" type="box_mover.py" output="screen"/>
+        <node name="state_monitor" pkg="my_package" type="state_monitor.py" output="screen"/>
+</launch>
+

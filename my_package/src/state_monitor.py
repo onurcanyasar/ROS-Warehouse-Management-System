@@ -27,7 +27,7 @@ class StateMonitor:
         while not rospy.is_shutdown():
             if self.released_time:
                 elapsed_time = rospy.Time.now() - self.released_time
-                if elapsed_time.to_sec() >= 10:
+                if elapsed_time.to_sec() >= 3:
                     self.send_goal_to_origin()
                     self.released_time = None
             rate.sleep()

@@ -5,7 +5,8 @@ from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import GetModelState, SetModelState
 from tf.transformations import euler_from_quaternion
 from std_msgs.msg import String
-from my_package.msg import MoveBoxAToB, CarryCommand 
+from my_package.msg import MoveBoxAToB, CarryCommand
+
 
 class BoxCarrier:
     def __init__(self, node_name, robot_name, distance_in_front):
@@ -30,8 +31,9 @@ class BoxCarrier:
 
     def carry_box_callback(self, msg):
         self.current_box_name = msg.box_name
-        self.state_pub.publish("CARRYING")
+        self.state_pub.publish("CARRYING " + self.current_box_name)
         self.start_carrying()
+
     def start_carrying(self):
         self.is_carrying = True
         while not rospy.is_shutdown() and self.is_carrying:
@@ -53,7 +55,7 @@ class BoxCarrier:
                 box_position.model_name = self.current_box_name
                 box_position.pose.position.x = robot_position.x + self.distance_in_front * math.cos(yaw)
                 box_position.pose.position.y = robot_position.y + self.distance_in_front * math.sin(yaw)
-                box_position.pose.position.z = 0.15 
+                box_position.pose.position.z = 0.15
                 box_position.pose.orientation = robot_orientation  # Maintain the same orientation as the robot
 
                 # Set the box state
@@ -61,12 +63,12 @@ class BoxCarrier:
 
             except rospy.ServiceException as e:
                 rospy.logerr("Service call failed: %s" % e)
-                
 
     def stop_carrying_callback(self, msg):
         self.is_carrying = False
         rospy.loginfo("Stopped carrying the box.")
         self.state_pub.publish("RELEASED")
+
 
 if __name__ == '__main__':
     try:

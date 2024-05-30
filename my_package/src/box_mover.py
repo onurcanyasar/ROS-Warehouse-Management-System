@@ -3,9 +3,11 @@ import math
 import rospy
 import tf
 from geometry_msgs.msg import PoseStamped
-from my_package.msg import MoveBoxAToB, CarryCommand 
+from my_package.msg import MoveBoxAToB, CarryCommand
 from move_base_msgs.msg import MoveBaseActionResult
 from std_msgs.msg import String
+
+
 class BoxMover:
     def __init__(self):
         rospy.init_node('box_mover', anonymous=True)
@@ -26,6 +28,28 @@ class BoxMover:
         self.target_pose = msg.target_pose
         self.current_box_name = msg.box_name
 
+        if msg.box_name == "STOP":
+            rospy.loginfo("Stopping the box mover...")
+            self.state_pub.publish("STOPPING")
+            self.state = "STOPPING"
+            self.release_box()
+
+            goal = PoseStamped()
+            goal.header.frame_id = "map"
+            goal.header.stamp = rospy.Time.now()
+            goal.pose.position.x = 0.0
+            goal.pose.position.y = 0.0
+            goal.pose.position.z = 0.0
+            goal.pose.orientation.x = 0.0
+            goal.pose.orientation.y = 0.0
+            goal.pose.orientation.z = 0.0
+            goal.pose.orientation.w = 0.8
+
+            rospy.loginfo("Moving to the box...")
+            self.state_pub.publish("MOVING_TO_BOX")
+            self.state = "MOVING_TO_BOX"
+            self.move_base_goal_pub.publish(goal)
+            return
         goal = PoseStamped()
         goal.header.frame_id = "map"
         goal.header.stamp = rospy.Time.now()
@@ -52,7 +76,6 @@ class BoxMover:
             self.state_pub.publish("FAIL")
             self.state = "IDLE"
 
-
     def initiate_carry_action(self):
         rospy.loginfo("Initiating the carry action...")
         carry_msg = MoveBoxAToB()
@@ -67,7 +90,7 @@ class BoxMover:
         goal.header.stamp = rospy.Time.now()
         goal.pose = self.target_pose
         rospy.loginfo("Moving to the target point...")
-        self.state_pub.publish("Moving to the target point...")
+        self.state_pub.publish("MOVING_TO_TARGET")
         self.state = "MOVING_TO_TARGET"
         self.move_base_goal_pub.publish(goal)
 
@@ -77,6 +100,7 @@ class BoxMover:
         release_msg.carry = False
         self.release_pub.publish(release_msg)
         rospy.sleep(1)  # Wait a moment to ensure the release action has completed
+
 
 if __name__ == '__main__':
     try:

@@ -45,9 +45,9 @@ class BoxMover:
             goal.pose.orientation.z = 0.0
             goal.pose.orientation.w = 0.8
 
-            rospy.loginfo("Moving to the box...")
-            self.state_pub.publish("MOVING_TO_BOX")
-            self.state = "MOVING_TO_BOX"
+            rospy.loginfo("Moving to the origin...")
+            self.state_pub.publish("MOVING_TO_ORIGIN")
+            self.state = "MOVING_TO_ORIGIN"
             self.move_base_goal_pub.publish(goal)
             return
         goal = PoseStamped()
@@ -71,6 +71,8 @@ class BoxMover:
                 self.state_pub.publish("REACHED_TO_TARGET")
                 self.release_box()
                 self.state = "IDLE"
+            else:
+                self.state_pub.publish("IDLE")
         elif msg.status.status in [4, 5, 9]:  # Goal aborted, rejected, or lost
             rospy.loginfo("Failed to reach the target point.")
             self.state_pub.publish("FAIL")

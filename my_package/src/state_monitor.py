@@ -9,7 +9,7 @@ class StateMonitor:
         rospy.init_node('state_monitor', anonymous=True)
         self.state_sub = rospy.Subscriber('/box_carrier/state', String, self.state_callback)
         self.move_base_goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
-
+        self.state_pub = rospy.Publisher('/box_carrier/state', String, queue_size=10)
         self.current_state = ""
         self.released_time = None
         self.monitor_state()
@@ -30,6 +30,8 @@ class StateMonitor:
                 if elapsed_time.to_sec() >= 3:
                     self.send_goal_to_origin()
                     self.released_time = None
+                    self.state_pub.publish("MOVING_TO_ORIGIN")
+                        
             rate.sleep()
 
     def send_goal_to_origin(self):

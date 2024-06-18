@@ -13,7 +13,11 @@
 
     <!-- move_base -->
     <include file="$(find turtlebot3_navigation)/launch/move_base.launch"/>
-
+    <node name="box_position_to_rviz" pkg="my_package" type="box_position_to_rviz.py" output="screen"/>
     
+    
+        <include file="$(find my_package)/launch/box_carrier.launch"/>
+
+ <node name="Orchestrator" pkg="my_package" type="Orchestrator.py" output="screen"/>    
 </launch>
 

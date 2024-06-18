@@ -72,7 +72,7 @@ def stop():
     pub.publish(move_box_msg)
     rospy.loginfo("Message published.")
 
-
+    
 def tkinter_loop():
     # Create the main window
     root = ThemedTk(theme="breeze")
@@ -104,7 +104,12 @@ def tkinter_loop():
     #add a stop button tkinter
     stop_button = tk.Button(root, text="STOP", command=stop)
     stop_button.pack(pady=10)
+    global state_label
+    # State label at the bottom
+    state_label = tk.Label(root, text="State: N/A")
+    state_label.pack(pady=10)
 
+    # Schedule the state label update function to run periodically
     # Start the Tkinter event loop
     root.mainloop()
 
@@ -112,6 +117,7 @@ def tkinter_loop():
 carrier_state = None
 carried_box_name = None
 pub = None
+state_label = None
 
 
 def odom_callback(msg):
@@ -135,6 +141,7 @@ def state_callback(msg):
     else:
         carrier_state = msg.data
 
+    state_label.config(text=f"State: {carrier_state}")
 
 def ros_loop():
     global pub
